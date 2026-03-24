@@ -19,7 +19,7 @@ class ViagemBD(Base):
     data_partida = Column(Date, nullable=False)
     duracao_dias = Column(Integer, nullable=False)
     max_viajantes = Column(Integer, nullable=False)
-class ReservaBD(Base):
+class MarcacaoBD(Base):
     __tablename__ = "reservas"
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_viajante = Column(Integer, ForeignKey("viajantes.id"), nullable=False)

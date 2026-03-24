@@ -1,6 +1,6 @@
 from datetime import date
 from sqlalchemy import create_engine
-from modelos import Base, ViagemBD, ViagemBD, ReservaBD, RestricoesViagemBD
+from modelos import Base, ViagemBD, ViagemBD, MarcacaoBD, RestricoesViagemBD
 
 viajantes = [
     ViagemBD(nome="Ana Silva", email="ana@example.com", data_nasc=date(1990, 5, 14)),
@@ -16,10 +16,10 @@ viagens = [
 ]
 
 reservas = [
-    ReservaBD(id_viajante=1, id_viagem=1, data_marcacao=date(2026, 1, 10)),
-    ReservaBD(id_viajante=2, id_viagem=1, data_marcacao=date(2026, 1, 12)),
-    ReservaBD(id_viajante=3, id_viagem=2, data_marcacao=date(2026, 2, 5)),
-    ReservaBD(id_viajante=1, id_viagem=3, data_marcacao=date(2026, 3, 1)),
+    MarcacaoBD(id_viajante=1, id_viagem=1, data_marcacao=date(2026, 1, 10)),
+    MarcacaoBD(id_viajante=2, id_viagem=1, data_marcacao=date(2026, 1, 12)),
+    MarcacaoBD(id_viajante=3, id_viagem=2, data_marcacao=date(2026, 2, 5)),
+    MarcacaoBD(id_viajante=1, id_viagem=3, data_marcacao=date(2026, 3, 1)),
 ]
 
 restricoes = [
