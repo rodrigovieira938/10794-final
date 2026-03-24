@@ -31,7 +31,7 @@ class RestricoesViagemBD(Base):
     id_viagem = Column(Integer, ForeignKey("viagens.id"), unique=True, nullable=False)
     idade_minima = Column(Integer, nullable=True)
     idade_maxima = Column(Integer, nullable=True)
-    proibicao_interac_eventos = Column(Boolean, nullable=True)
+    proibicao_interac_eventos = Column(Boolean, nullable=False, default=False)
     requisitos = Column(String, nullable=True)
 # Pydantic
 class Viajante(BaseModel):
@@ -70,6 +70,21 @@ class PatchViagem(BaseModel):
     duracao_dias: int | None = None
     max_viajantes: int | None = None
 
+class RestricoesViagem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    id_viagem: int
+    idade_minima: int | None = None
+    idade_maxima: int | None = None
+    proibicao_interac_eventos: bool = False
+    requisitos: str | None = None
+
+class CreateRestricoesViagem(BaseModel):
+    idade_minima: int | None = None
+    idade_maxima: int | None = None
+    proibicao_interac_eventos: bool = False
+    requisitos: str | None = None
 
 class Marcacao(BaseModel):
     model_config = ConfigDict(from_attributes=True)

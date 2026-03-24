@@ -153,6 +153,66 @@ def delete_viagem(id: int):
     session.commit()
     return {"message": "Viagem eliminada com sucesso"}
 
+# Restrições
+
+@app.get("/viagens/{id}/restricoes")
+def get_restricoes(id: int) -> RestricoesViagem:
+    if session.get(ViagemBD, id) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+    stmt = select(RestricoesViagemBD).where(RestricoesViagemBD.id_viagem == id)
+    result = session.execute(stmt)
+    restricoes =  result.scalars().first()
+    if restricoes is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restrições não encontrada")
+    return RestricoesViagem.model_validate(restricoes)
+
+
+@app.post("/viagens/{id}/restricoes")
+def create_restricao(id: int, create_restricao: CreateRestricoesViagem) -> RestricoesViagem:
+    if session.get(ViagemBD, id) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+    
+    restricao_bd = RestricoesViagemBD(**create_restricao.model_dump())
+    restricao_bd.id_viagem = id # type: ignore
+
+    session.add(restricao_bd)
+    session.commit()
+    session.refresh(restricao_bd)
+    return RestricoesViagem.model_validate(restricao_bd)
+@app.put("/viagens/{id}/restricoes")
+def put_restricao(id: int, create_restricao: CreateRestricoesViagem) -> RestricoesViagem:
+    if session.get(ViagemBD, id) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+    
+    stmt = select(RestricoesViagemBD).where(RestricoesViagemBD.id == id)
+    result = session.execute(stmt)
+    restricao =  result.scalars().first()
+    if restricao is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restrição não encontrada")
+    
+    
+    restricao.idade_maxima = create_restricao.idade_maxima # pyright: ignore[reportAttributeAccessIssue]
+    restricao.idade_minima = create_restricao.idade_minima # pyright: ignore[reportAttributeAccessIssue]
+    restricao.proibicao_interac_eventos = create_restricao.proibicao_interac_eventos # pyright: ignore[reportAttributeAccessIssue]
+    restricao.requisitos = create_restricao.requisitos # pyright: ignore[reportAttributeAccessIssue]
+
+    session.commit()
+    session.refresh(restricao)
+    return RestricoesViagem.model_validate(restricao)
+@app.delete("/viagens/{id}/restricoes")
+def delete_restricao(id: int):
+    if session.get(ViagemBD, id) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+
+    stmt = select(RestricoesViagemBD).where(RestricoesViagemBD.id == id)
+    result = session.execute(stmt)
+    restrição =  result.scalars().first()
+    if restrição is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restrição não encontrada")
+    session.delete(restrição)
+    session.commit()
+    return {"message": "Restrição eliminadas com sucesso"}
+
 
 # Marcações
 @app.post("/marcacoes")
