@@ -49,6 +49,8 @@ class PatchViajante(BaseModel):
     nome: str | None = None
     email: str | None = None
     data_nasc: datetime.date | None = None
+
+
 class Viagem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -67,3 +69,20 @@ class PatchViagem(BaseModel):
     data_partida: datetime.date | None = None
     duracao_dias: int | None = None
     max_viajantes: int | None = None
+
+
+class Marcacao(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    id_viajante: int
+    id_viagem: int
+    data_marcacao: datetime.date
+class CreateMarcacao(BaseModel):
+    id_viajante: int
+    id_viagem: int
+    data_marcacao: datetime.date
+class PatchMarcacao(BaseModel):
+    id_viajante: int | None = None
+    id_viagem: int | None = None
+    data_marcacao: datetime.date | None = None

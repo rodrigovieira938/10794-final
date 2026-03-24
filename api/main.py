@@ -3,7 +3,8 @@ from typing import List
 from fastapi import FastAPI, HTTPException, status
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-from modelos import Base, ViajanteBD, Viajante, CreateViajante, PatchViajante, ViagemBD, Viagem, CreateViagem, PatchViagem
+from modelos import *
+
 
 engine = create_engine('sqlite:///alunos.db')
 Base.metadata.create_all(engine)
@@ -122,21 +123,21 @@ def put_viagem(id: int, create_viagem: CreateViagem) -> Viagem:
     session.refresh(viagem)
     return Viagem.model_validate(viagem)
 @app.patch("/viagens/{id}")
-def patch_viagem(id: int, create_viagem: PatchViagem) -> Viagem:
+def patch_viagem(id: int, patch_viagem: PatchViagem) -> Viagem:
     stmt = select(ViagemBD).where(ViagemBD.id == id)
     result = session.execute(stmt)
     viagem =  result.scalars().first()
     if viagem is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Viagem não encontrada")
     
-    if create_viagem.destino_temporal != None:
-        viagem.destino_temporal = create_viagem.destino_temporal # pyright: ignore[reportAttributeAccessIssue]
-    if create_viagem.data_partida != None:
-        viagem.data_partida = create_viagem.data_partida # pyright: ignore[reportAttributeAccessIssue]
-    if create_viagem.duracao_dias != None:
-        viagem.duracao_dias = create_viagem.duracao_dias # pyright: ignore[reportAttributeAccessIssue]
-    if create_viagem.max_viajantes != None:
-        viagem.max_viajantes = create_viagem.max_viajantes # pyright: ignore[reportAttributeAccessIssue]
+    if patch_viagem.destino_temporal != None:
+        viagem.destino_temporal = patch_viagem.destino_temporal # pyright: ignore[reportAttributeAccessIssue]
+    if patch_viagem.data_partida != None:
+        viagem.data_partida = patch_viagem.data_partida # pyright: ignore[reportAttributeAccessIssue]
+    if patch_viagem.duracao_dias != None:
+        viagem.duracao_dias = patch_viagem.duracao_dias # pyright: ignore[reportAttributeAccessIssue]
+    if patch_viagem.max_viajantes != None:
+        viagem.max_viajantes = patch_viagem.max_viajantes # pyright: ignore[reportAttributeAccessIssue]
 
     session.commit()
     session.refresh(viagem)
@@ -151,3 +152,91 @@ def delete_viagem(id: int):
     session.delete(viagem)
     session.commit()
     return {"message": "Viagem eliminada com sucesso"}
+
+
+# Marcações
+@app.post("/marcacoes")
+def create_marcacao(create_marcacao: CreateMarcacao):
+    marcacao_bd = MarcacaoBD(**create_marcacao.model_dump())
+
+    if session.get(ViajanteBD, create_marcacao.id_viajante) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
+    if session.get(ViagemBD, create_marcacao.id_viagem) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+
+    session.add(marcacao_bd)
+    session.commit()
+    session.refresh(marcacao_bd)
+    return Marcacao.model_validate(marcacao_bd)
+@app.get("/marcacoes")
+def get_marcacoes(viajante_id: int = 0) -> List[Marcacao]:
+    stmt = None
+    if(viajante_id == 0):
+        stmt = select(MarcacaoBD)
+    else:
+        stmt = select(MarcacaoBD).where(MarcacaoBD.id_viajante == viajante_id)
+    result = session.execute(stmt)
+    marcacoes = result.scalars().all()
+    return [Marcacao.model_validate(marcacao) for marcacao in marcacoes]
+@app.get("/marcacoes/{id}")
+def get_marcacao(id: int) -> Marcacao:
+    stmt = select(MarcacaoBD).where(MarcacaoBD.id == id)
+    result = session.execute(stmt)
+    marcacao =  result.scalars().first()
+    if marcacao is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Marcação não encontrada")
+    return Marcacao.model_validate(marcacao)
+@app.put("/marcacoes/{id}")
+def put_marcacao(id: int, create_marcacao: CreateMarcacao) -> Marcacao:
+    stmt = select(MarcacaoBD).where(MarcacaoBD.id == id)
+    result = session.execute(stmt)
+    marcacao =  result.scalars().first()
+    if marcacao is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Marcação não encontrada")
+    
+    if session.get(ViajanteBD, create_marcacao.id_viajante) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
+    if session.get(ViagemBD, create_marcacao.id_viagem) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+
+    marcacao.id_viajante = create_marcacao.id_viajante # pyright: ignore[reportAttributeAccessIssue]
+    marcacao.id_viagem = create_marcacao.id_viagem # pyright: ignore[reportAttributeAccessIssue]
+    marcacao.data_marcacao = create_marcacao.data_marcacao # pyright: ignore[reportAttributeAccessIssue]
+
+    session.commit()
+    session.refresh(marcacao)
+    return Marcacao.model_validate(marcacao)
+@app.patch("/marcacoes/{id}")
+def patch_marcacao(id: int, patch_marcacao: PatchMarcacao) -> Marcacao:
+    stmt = select(MarcacaoBD).where(MarcacaoBD.id == id)
+    result = session.execute(stmt)
+    marcacao =  result.scalars().first()
+    if marcacao is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Marcação não encontrada")
+
+
+    if patch_marcacao.id_viajante != None:
+        if session.get(ViajanteBD, patch_marcacao.id_viajante) == None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
+        marcacao.id_viajante = patch_marcacao.id_viajante # pyright: ignore[reportAttributeAccessIssue]
+    if patch_marcacao.id_viagem != None:
+        if session.get(ViagemBD, patch_marcacao.id_viagem) == None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrado")
+        marcacao.id_viagem = patch_marcacao.id_viagem # pyright: ignore[reportAttributeAccessIssue]
+    if patch_marcacao.data_marcacao != None:
+        marcacao.data_marcacao = patch_marcacao.data_marcacao # pyright: ignore[reportAttributeAccessIssue]
+
+    session.commit()
+    session.refresh(marcacao)
+    return Marcacao.model_validate(marcacao)
+@app.delete("/marcacoes/{id}")
+def delete_marcacao(id: int):
+    stmt = select(MarcacaoBD).where(MarcacaoBD.id == id)
+    result = session.execute(stmt)
+    marcacao =  result.scalars().first()
+    if marcacao is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Marcação não encontrada")
+    session.delete(marcacao)
+    session.commit()
+    return {"message": "Marcação eliminada com sucesso"}
+

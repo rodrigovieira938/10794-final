@@ -1,12 +1,12 @@
 from datetime import date
 from sqlalchemy import create_engine
-from modelos import Base, ViagemBD, ViagemBD, MarcacaoBD, RestricoesViagemBD
+from modelos import Base, ViajanteBD, ViagemBD, MarcacaoBD, RestricoesViagemBD
 
 viajantes = [
-    ViagemBD(nome="Ana Silva", email="ana@example.com", data_nasc=date(1990, 5, 14)),
-    ViagemBD(nome="Bruno Costa", email="bruno@example.com", data_nasc=date(1985, 8, 22)),
-    ViagemBD(nome="Carla Mendes", email="carla@example.com", data_nasc=date(2000, 1, 10)),
-    ViagemBD(nome="Diogo Rocha", email="diogo@example.com", data_nasc=date(1978, 12, 3)),
+    ViajanteBD(nome="Ana Silva", email="ana@example.com", data_nasc=date(1990, 5, 14)),
+    ViajanteBD(nome="Bruno Costa", email="bruno@example.com", data_nasc=date(1985, 8, 22)),
+    ViajanteBD(nome="Carla Mendes", email="carla@example.com", data_nasc=date(2000, 1, 10)),
+    ViajanteBD(nome="Diogo Rocha", email="diogo@example.com", data_nasc=date(1978, 12, 3)),
 ]
 
 viagens = [
