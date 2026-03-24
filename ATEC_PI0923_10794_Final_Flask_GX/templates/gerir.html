@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Gerir{% endblock %}
+
+{%block content %}
+    <h1>Gerir</h1>
+    <ul>
+        {% for v in viajantes %}
+        <li>
+            <form method="post" style="display: inline;">
+                <input type="hidden" name="viajante_id" value="{{ v.id }}">
+                <input type="text" name="nome" value="{{ v.nome }}" required>
+                <input type="email" name="email" value="{{ v.email }}" required>
+                <input type="date" name="data_nasc" value="{{ v.data_nasc }}" required>
+                <button type="submit" name="acao" value="editar">Atualizar</button>
+                
+
+
+
+
+            </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ChronoTravel{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('listar') }}">Listar</a></li>
+            <li><a href="{{ url_for('consultar') }}">Consultar</a></li>
+            <li><a href="{{ url_for('gerir') }}">Gerir</a></li>
+            <li><a href="{{ url_for('marcar') }}">Marcar</a></li>
+            <li><a href="{{ url_for('registar') }}">Registar</a></li>
+        </ul>
+    </nav>
+    <hr>
+    <main>
+        {% block content %}
+        <h2>Trabalho realizado por:</h2>
+        <p><strong>Afonso Batista</strong> e <strong>Rodrigo Vieira</strong></p>
+
+        <h3>Objetivo do Projeto</h3>
+        <p>
+            Este trabalho tem como objetivo desenvolver um sistema de gestão de viagens temporais,
+            permitindo criar reservas, gerir perfis de viajantes, consultar viagens marcadas e
+            efetuar pedidos personalizados. O projeto demonstra o uso de Flask, templates Jinja,
+            rotas dinâmicas e manipulação de dados em memória.
+        </p>
+    {% endblock %}
+    </main>
+
+<footer>
+    <small>&copy; 2026 Afonso Batista e Rodrigo Vieira 10794-Python Avançado</small>
+</footer>
+
+
+</body>
+</html>

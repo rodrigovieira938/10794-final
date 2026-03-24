@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Marcar{% endblock %}
+
+{%block content %}
+    <h1>Marcar</h1>
+    <form method="post">
+        <label for="viajante">Viajante:</label>
+        <select id="viajante" name="viajante" required>
+            {% for viajante in viajantes %}
+            <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
+            {% endfor %}
+        </select>
+        
+        <label for="viagem">Viagem:</label>
+        <select id="viagem" name="viagem" required>
+            {% for viagem in viagens %}
+            <option value="{{ viagem.id }}">{{ viagem.destino_temporal }} - {{ viagem.data_partida }}</option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" class="btn-primary">Marcar</button>
+    </form>
+    <hr>
+    <h1>Pedido de Viagem</h1>
+    <form method="post">
+        <select id="viajante" name="viajante" required>
+            {% for viajante in viajantes %}
+            <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
+            {% endfor %}
+        </select>
+    
+        <label for="destino">Destino Temporal:</label>
+        <input type="text" id="destino" name="destino" required>
+        
+        <label for="data_partida">Data de Partida:</label>
+        <input type="date" id="data_partida" name="data_partida" required>
+        
+        <button type="submit" class="btn-secondary">Pedir Viagem</button>
+{% endblock %}
