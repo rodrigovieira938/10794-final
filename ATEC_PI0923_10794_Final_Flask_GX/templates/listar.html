@@ -7,8 +7,8 @@
 
 <h2>Viajantes</h2>
 <ul>
-    {% for viajante in viajantes %}
-    <li>{{ viajante.nome }} - {{ viajante.email }}</li>
+    {% for v in viajantes %}
+        <li>{{ v.nome }} — {{ v.email }}</li>
     {% endfor %}
 </ul>
 
@@ -19,6 +19,8 @@
     {% endfor %}
 </ul>
 <hr>
+
+<!-- Reservas 
 <h2>Reservas</h2>
 <ul>
     {% for r in reservas %}
@@ -45,4 +47,6 @@
     <li>{{ restricao.id_viagem }} - Idade mínima: {{ restricao.idade_minima }} - Idade máxima: {{ restricao.idade_maxima }}</li>
     {% endfor %}
 </ul>
+-->
+
 {% endblock %}

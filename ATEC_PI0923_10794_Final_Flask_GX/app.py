@@ -6,109 +6,6 @@ app = Flask(__name__)
 api_base_url = "http://localhost:8000"
 
 
-viajantes = [
-    {
-        "id": 1,
-        "nome": "Ana Silva",
-        "email": "ana@example.com",
-        "data_nasc": date(1990, 5, 14)
-    },
-    {
-        "id": 2,
-        "nome": "Bruno Costa",
-        "email": "bruno@example.com",
-        "data_nasc": date(1985, 8, 22)
-    },
-    {
-        "id": 3,
-        "nome": "Carla Mendes",
-        "email": "carla@example.com",
-        "data_nasc": date(2000, 1, 10)
-    },
-    {
-        "id": 4,
-        "nome": "Diogo Rocha",
-        "email": "diogo@example.com",
-        "data_nasc": date(1978, 12, 3)
-    },
-]
-
-viagens = [
-    {
-        "id": 1,
-        "destino_temporal": "Roma Antiga - 50 a.C.",
-        "data_partida": date(2026, 6, 1),
-        "duracao_dias": 7,
-        "max_viajantes": 10
-    },
-    {
-        "id": 2,
-        "destino_temporal": "Egito - Construção das Pirâmides",
-        "data_partida": date(2026, 7, 15),
-        "duracao_dias": 10,
-        "max_viajantes": 8
-    },
-    {
-        "id": 3,
-        "destino_temporal": "Futuro - Marte 2150",
-        "data_partida": date(2026, 9, 10),
-        "duracao_dias": 5,
-        "max_viajantes": 5
-    },
-]
-
-reservas = [
-    {
-        "id": 1,
-        "id_viajante": 1,
-        "id_viagem": 1,
-        "data_marcacao": date(2026, 1, 10)
-    },
-    {
-        "id": 2,
-        "id_viajante": 2,
-        "id_viagem": 1,
-        "data_marcacao": date(2026, 1, 12)
-    },
-    {
-        "id": 3,
-        "id_viajante": 3,
-        "id_viagem": 2,
-        "data_marcacao": date(2026, 2, 5)
-    },
-    {
-        "id": 4,
-        "id_viajante": 1,
-        "id_viagem": 3,
-        "data_marcacao": date(2026, 3, 1)
-    },
-]
-
-restricoes = [
-    {
-        "id_viagem": 1,
-        "idade_minima": 18,
-        "idade_maxima": 60,
-        "proibicao_interac_eventos": True,
-        "requisitos": "Não alterar eventos históricos"
-    },
-    {
-        "id_viagem": 2,
-        "idade_minima": 21,
-        "idade_maxima": None,
-        "proibicao_interac_eventos": True,
-        "requisitos": "Uso obrigatório de traje adequado"
-    },
-    {
-        "id_viagem": 3,
-        "idade_minima": 25,
-        "idade_maxima": 55,
-        "proibicao_interac_eventos": False,
-        "requisitos": "Treino físico obrigatório"
-    },
-]
-
-
 
 @app.route('/')
 def home():
@@ -116,50 +13,100 @@ def home():
 
 @app.route('/listar')
 def listar():
-    return render_template('listar.html', viajantes=viajantes, viagens=viagens, reservas=reservas, restricoes=restricoes)
+    resp = requests.get(f"{api_base_url}/viajantes")
+    viajantes_api = resp.json()
+
+    
+    lista = []
+    for v in viajantes_api:
+        lista.append({
+            "nome": v["nome"],
+            "email": v["email"]
+        })
+
+    resp_viagens = requests.get(f"{api_base_url}/viagens")
+    viagens = resp_viagens.json()
+
+    resp_reservas = requests.get(f"{api_base_url}/marcacoes")
+    reservas = resp_reservas.json()
+
+    restricoes = []
+    for viagem in viagens:
+        resp_r = requests.get(f"{api_base_url}/viagens/{viagem['id']}/restricoes")
+        if resp_r.ok:
+            restricoes.extend(resp_r.json())
+
+    return render_template('listar.html', viajantes=lista, viagens=viagens, reservas=reservas, restricoes=restricoes)
 
 @app.route('/consultar')
 def consultar():
-    return render_template('consultar.html', reservas=reservas, viajantes=viajantes, viagens=viagens)
+    resp1 = requests.get(f"{api_base_url}/viajantes")
+    viajantes_api = resp1.json()
+    viajantes_display = []
+    for v in viajantes_api:
+        viajantes_display.append({
+            "nome": v["nome"],
+            "email": v["email"]
+        })
 
-@app.route('/gerir',methods=['GET', 'POST'])
+    resp2 = requests.get(f"{api_base_url}/viagens")
+    viagens = resp2.json()
+
+    resp3 = requests.get(f"{api_base_url}/marcacoes")
+    reservas = resp3.json()
+
+    return render_template('consultar.html', reservas=reservas, viajantes=viajantes_api, viagens=viagens, viajantes_display=viajantes_display)
+
+@app.route('/gerir', methods=['GET', 'POST'])
 def gerir():
-    return render_template('gerir.html', viajantes = viajantes, viagens = viagens, reservas = reservas, restricoes = restricoes)
 
-pedidos = []
+    if request.method == 'POST':
+        acao = request.form.get('acao')
+        id_viajante = request.form.get('id')
+
+
+        if acao == 'apagar':
+            requests.delete(f"{api_base_url}/viajantes/{id_viajante}")
+
+        elif acao == 'editar':
+            dados = {
+                "nome": request.form.get('nome'),
+                "email": request.form.get('email'),
+                "data_nasc": request.form.get('data_nasc')
+            }
+            requests.put(f"{api_base_url}/viajantes/{id_viajante}", json=dados)
+
+ 
+    req = requests.get(f"{api_base_url}/viajantes")
+    viajantes = req.json()
+
+    return render_template("gerir.html", viajantes=viajantes)
+
+
 
 @app.route('/marcar', methods=['GET', 'POST'])
 def marcar():
-    if request.method == 'POST':
-        tipo = request.form['tipo']
-        id_viajante = int(request.form['viajante'])
+    id_viajante = request.form.get('viajante')
+    id_viagem = request.form.get('viagem')
+    data_marcacao = datetime.now().date().strftime("%Y-%m-%d")  
+    
 
-        if tipo == "existente":
-            id_viagem = int(request.form['viagem'])
+    nova_marcacao = {
+        "id_viajante": id_viajante,
+        "id_viagem": id_viagem,
+        "data_marcacao": data_marcacao
+    }
+    print(nova_marcacao)
+    req = requests.post(f"{api_base_url}/marcacoes", json=nova_marcacao)
+    
+    req2 = requests.get(f"{api_base_url}/viajantes")
+    viajantes = req2.json()
 
-            nova_reserva = {
-                "id": len(reservas) + 1,
-                "id_viajante": id_viajante,
-                "id_viagem": id_viagem,
-                "data_marcacao": date.today()
-            }
-            reservas.append(nova_reserva)
+    req_v = requests.get(f"{api_base_url}/viajantes")
+    viajantes = req_v.json()
 
-        elif tipo == "pedido":
-            destino = request.form['destino_pedido']
-            data_p = request.form['data_pedido']
-
-            novo_pedido = {
-                "id": len(pedidos) + 1,
-                "id_viajante": id_viajante,
-                "destino": destino,
-                "data_desejada": date.fromisoformat(data_p),
-                "data_pedido": date.today()
-            }
-            pedidos.append(novo_pedido)
-
-        return redirect(url_for('consultar'))
-
+    req_vi = requests.get(f"{api_base_url}/viagens")
+    viagens = req_vi.json()
     return render_template('marcar.html', viajantes=viajantes, viagens=viagens)
 
 
@@ -176,7 +123,6 @@ def registar():
             "email": email,
             "data_nasc": data_nasc
         }
-        print(novo_viajante)
         req = requests.post(f"{api_base_url}/viajantes", json=novo_viajante)
         
         

@@ -3,23 +3,31 @@
 {% block title %}Gerir{% endblock %}
 
 {%block content %}
-    <h1>Gerir</h1>
-    <ul>
-        {% for v in viajantes %}
-        <li>
-            <form method="post" style="display: inline;">
-                <input type="hidden" name="viajante_id" value="{{ v.id }}">
-                <input type="text" name="nome" value="{{ v.nome }}" required>
-                <input type="email" name="email" value="{{ v.email }}" required>
-                <input type="date" name="data_nasc" value="{{ v.data_nasc }}" required>
-                <button type="submit" name="acao" value="editar">Atualizar</button>
-                
+    <h1>Gerir Viajantes</h1>
+
+<ul>
+{% for v in viajantes %}
+    <li>
+        {{ v.nome }} - {{ v.email }}
+
+        <form method="post" style="display:inline;">
+            <input type="hidden" name="id" value="{{ v.id }}">
+            <input type="hidden" name="acao" value="apagar">
+            <button type="submit">Apagar</button>
+        </form>
 
 
+        <form method="post">
+            <input type="hidden" name="id" value="{{ v.id }}">
+            <input type="hidden" name="acao" value="editar">
 
+            <input type="text" name="nome" placeholder="Nome" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="date" name="data_nasc" required>
 
-            </form>
-            </li>
-        {% endfor %}
-    </ul>
+            <button type="submit">Atualizar</button>
+        </form>
+    </li>
+{% endfor %}
+</ul>
 {% endblock %}
