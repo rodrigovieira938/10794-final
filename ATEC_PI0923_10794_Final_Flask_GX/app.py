@@ -1,8 +1,9 @@
 from datetime import date, datetime
-
+import requests 
 from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
+api_base_url = "http://localhost:8000"
 
 
 viajantes = [
@@ -169,6 +170,15 @@ def registar():
         nome = request.form['nome']
         email = request.form['email']
         data_nasc = request.form['data_nasc']
+
+        novo_viajante = {
+            "nome": nome,
+            "email": email,
+            "data_nasc": data_nasc
+        }
+        print(novo_viajante)
+        req = requests.post(f"{api_base_url}/viajantes", json=novo_viajante)
+        
         
         return redirect(url_for('listar'))
     return render_template('registar.html')
