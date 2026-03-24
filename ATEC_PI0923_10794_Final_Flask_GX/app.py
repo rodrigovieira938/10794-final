@@ -13,9 +13,9 @@ def home():
 
 @app.route('/listar')
 def listar():
+    # Viajantes
     resp = requests.get(f"{api_base_url}/viajantes")
     viajantes_api = resp.json()
-
     
     lista = []
     for v in viajantes_api:
@@ -23,19 +23,26 @@ def listar():
             "nome": v["nome"],
             "email": v["email"]
         })
-
+ 
+    # Viagens
     resp_viagens = requests.get(f"{api_base_url}/viagens")
     viagens = resp_viagens.json()
-
+ 
+    # Reservas
     resp_reservas = requests.get(f"{api_base_url}/marcacoes")
     reservas = resp_reservas.json()
-
+ 
+    # Restrições (Corrigido)
     restricoes = []
     for viagem in viagens:
         resp_r = requests.get(f"{api_base_url}/viagens/{viagem['id']}/restricoes")
-        if resp_r.ok:
-            restricoes.extend(resp_r.json())
-
+        # Se a API devolver um dicionário {}, o append guarda-o inteiro
+        dados_r = resp_r.json()
+        
+        # Garantimos que o ID da viagem vai dentro do dicionário para o HTML
+        dados_r['id_viagem'] = viagem['id']
+        restricoes.append(dados_r)
+ 
     return render_template('listar.html', viajantes=lista, viagens=viagens, reservas=reservas, restricoes=restricoes)
 
 @app.route('/consultar')

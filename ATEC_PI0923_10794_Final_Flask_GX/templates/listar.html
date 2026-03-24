@@ -2,7 +2,7 @@
 
 {% block title %}Listar{% endblock %}
 
-{%block content %}
+{% block content %}
 <h1>Listar</h1>
 
 <h2>Viajantes</h2>
@@ -20,33 +20,15 @@
 </ul>
 <hr>
 
-<!-- Reservas 
-<h2>Reservas</h2>
-<ul>
-    {% for r in reservas %}
-    <li>
-        {% for v in viajantes %}
-        {% if v.id == r.id_viajante %}
-         Nome: {{ v.nome }}
-        {% endif %}
-        {% endfor %}
-        -
-        {% for vi in viagens %}
-        {% if vi.id == r.id_viagem %}
-        Destino: {{ vi.destino_temporal }}
-        {% endif %}
-        {% endfor %}
-        -
-        Data: {{ r.data_marcacao }}
-    </li>
-    {% endfor %}
-</ul>
 <h2>Restrições</h2>
 <ul>
     {% for restricao in restricoes %}
-    <li>{{ restricao.id_viagem }} - Idade mínima: {{ restricao.idade_minima }} - Idade máxima: {{ restricao.idade_maxima }}</li>
+    <li>
+        <strong>Viagem: {{ restricao.id_viagem }}</strong> | 
+        Idade mínima: {{ restricao.idade_minima }} | 
+        Idade máxima: {{ restricao.idade_maxima }}
+    </li>
     {% endfor %}
 </ul>
--->
 
 {% endblock %}
