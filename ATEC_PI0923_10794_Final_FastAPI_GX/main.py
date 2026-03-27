@@ -15,7 +15,7 @@ app = FastAPI()
 
 # Viajantes
 
-@app.post("/viajantes")
+@app.post("/viajantes", status_code=status.HTTP_201_CREATED)
 def create_viajante(create_viajante: CreateViajante) -> Viajante:
     viajante_bd = ViajanteBD(**create_viajante.model_dump())
 
@@ -81,7 +81,7 @@ def delete_viajante(id: int):
 
 # Viagens
 
-@app.post("/viagens")
+@app.post("/viagens", status_code=status.HTTP_201_CREATED)
 def create_viagem(create_viagem: CreateViagem) -> Viagem:
     viagem_bd = ViagemBD(**create_viagem.model_dump())
 
@@ -167,7 +167,7 @@ def get_restricoes(id: int) -> RestricoesViagem:
     return RestricoesViagem.model_validate(restricoes)
 
 
-@app.post("/viagens/{id}/restricoes")
+@app.post("/viagens/{id}/restricoes", status_code=status.HTTP_201_CREATED)
 def create_restricao(id: int, create_restricao: CreateRestricoesViagem) -> RestricoesViagem:
     if session.get(ViagemBD, id) == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
@@ -215,7 +215,7 @@ def delete_restricao(id: int):
 
 
 # Marcações
-@app.post("/marcacoes")
+@app.post("/marcacoes", status_code=status.HTTP_201_CREATED)
 def create_marcacao(create_marcacao: CreateMarcacao):
     marcacao_bd = MarcacaoBD(**create_marcacao.model_dump())
 
@@ -303,7 +303,7 @@ def delete_marcacao(id: int):
 
 
 
-@app.post("/pedidos")
+@app.post("/pedidos", status_code=status.HTTP_201_CREATED)
 def create_pedido(create_pedido: CreatePedidoViagem) -> PedidoViagem:
     pedido_bd = PedidoBD(**create_pedido.model_dump())
 
