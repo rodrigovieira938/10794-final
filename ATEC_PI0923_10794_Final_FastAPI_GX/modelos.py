@@ -20,11 +20,17 @@ class ViagemBD(Base):
     duracao_dias = Column(Integer, nullable=False)
     max_viajantes = Column(Integer, nullable=False)
 class MarcacaoBD(Base):
-    __tablename__ = "reservas"
+    __tablename__ = "marcacoes"
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_viajante = Column(Integer, ForeignKey("viajantes.id"), nullable=False)
     id_viagem = Column(Integer, ForeignKey("viagens.id"), nullable=False)
     data_marcacao = Column(Date, nullable=False)
+class PedidoBD(Base):
+    __tablename__ = "pedidos"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_viajante = Column(Integer, ForeignKey("viajantes.id"), nullable=False)
+    data_pedido = Column(Date, nullable=False)
+    destino_temporal = Column(String, nullable=False)
 class RestricoesViagemBD(Base):
     __tablename__ = "restricoes_viagem"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -101,3 +107,15 @@ class PatchMarcacao(BaseModel):
     id_viajante: int | None = None
     id_viagem: int | None = None
     data_marcacao: datetime.date | None = None
+
+class PedidoViagem(BaseModel):
+    id: int
+    id_viajante: int
+    data_pedido: datetime.date
+    destino_temporal: str
+class CreatePedidoViagem(BaseModel):
+    id_viajante: int
+    destino_temporal: str
+class PatchPedidoViagem(BaseModel):
+    id_viajante: int | None = None
+    destino_temporal: str | None = None

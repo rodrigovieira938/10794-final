@@ -23,7 +23,7 @@
     </form>
     <hr>
     <h1>Pedido de Viagem</h1>
-    <form method="post">
+    <form method="post" action="{{ url_for('pedir_viagem') }}">
         <select id="viajante" name="viajante" required>
             {% for viajante in viajantes %}
                 <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
@@ -32,9 +32,6 @@
     
         <label for="destino">Destino Temporal:</label>
         <input type="text" id="destino" name="destino" required>
-        
-        <label for="data_partida">Data de Partida:</label>
-        <input type="date" id="data_partida" name="data_partida" required>
         
         <button type="submit" class="btn-secondary">Pedir Viagem</button>
 

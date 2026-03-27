@@ -300,3 +300,79 @@ def delete_marcacao(id: int):
     session.commit()
     return {"message": "Marcação eliminada com sucesso"}
 
+
+
+
+@app.post("/pedidos")
+def create_pedido(create_pedido: CreatePedidoViagem) -> PedidoViagem:
+    pedido_bd = PedidoBD(**create_pedido.model_dump())
+
+    if session.get(ViajanteBD, create_pedido.id_viajante) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
+    
+    pedido_bd.data_pedido = datetime.datetime.now().date() # type: ignore
+
+    session.add(pedido_bd)
+    session.commit()
+    session.refresh(pedido_bd)
+    return PedidoViagem.model_validate(pedido_bd.__dict__)
+@app.get("/pedidos")
+def get_pedidos() -> List[PedidoViagem]:
+    stmt = select(PedidoBD)
+    result = session.execute(stmt)
+    pedidos = result.scalars().all()
+    return [PedidoViagem.model_validate(pedido.__dict__) for pedido in pedidos]
+@app.get("/pedidos/{id}")
+def get_pedido(id: int) -> PedidoViagem:
+    stmt = select(PedidoBD).where(PedidoBD.id == id)
+    result = session.execute(stmt)
+    pedido =  result.scalars().first()
+    if pedido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrada")
+    return PedidoViagem.model_validate(pedido.__dict__)
+@app.put("/pedidos/{id}")
+def put_pedido(id: int, create_pedido: CreatePedidoViagem) -> PedidoViagem:
+    stmt = select(PedidoBD).where(PedidoBD.id == id)
+    result = session.execute(stmt)
+    pedido =  result.scalars().first()
+    if pedido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado")
+    
+    if session.get(ViajanteBD, create_pedido.id_viajante) == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
+
+    pedido.id_viajante = create_pedido.id_viajante # pyright: ignore[reportAttributeAccessIssue]
+    pedido.destino_temporal = create_pedido.destino_temporal # pyright: ignore[reportAttributeAccessIssue]
+
+    session.commit()
+    session.refresh(pedido)
+    return PedidoViagem.model_validate(pedido.__dict__)
+@app.patch("/pedidos/{id}")
+def patch_pedido(id: int, patch_pedido: PatchPedidoViagem) -> PedidoViagem:
+    stmt = select(PedidoBD).where(PedidoBD.id == id)
+    result = session.execute(stmt)
+    pedido =  result.scalars().first()
+    if pedido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado")
+
+
+    if patch_pedido.id_viajante != None:
+        if session.get(ViajanteBD, patch_pedido.id_viajante) == None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
+        pedido.id_viajante = patch_pedido.id_viajante # pyright: ignore[reportAttributeAccessIssue]
+    if patch_pedido.destino_temporal != None:
+        pedido.destino_temporal = patch_pedido.destino_temporal # pyright: ignore[reportAttributeAccessIssue]
+
+    session.commit()
+    session.refresh(pedido)
+    return PedidoViagem.model_validate(pedido.__dict__)
+@app.delete("/pedidos/{id}")
+def delete_pedido(id: int):
+    stmt = select(PedidoBD).where(PedidoBD.id == id)
+    result = session.execute(stmt)
+    pedido =  result.scalars().first()
+    if pedido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado")
+    session.delete(pedido)
+    session.commit()
+    return {"message": "Pedido eliminada com sucesso"}

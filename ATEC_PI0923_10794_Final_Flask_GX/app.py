@@ -93,19 +93,21 @@ def gerir():
 
 @app.route('/marcar', methods=['GET', 'POST'])
 def marcar():
-    id_viajante = request.form.get('viajante')
-    id_viagem = request.form.get('viagem')
-    data_marcacao = datetime.now().date().strftime("%Y-%m-%d")  
+    if request.method == 'POST':
+        id_viajante = request.form.get('viajante')
+        id_viagem = request.form.get('viagem')
+        data_marcacao = datetime.now().date().strftime("%Y-%m-%d")  
     
 
-    nova_marcacao = {
-        "id_viajante": id_viajante,
-        "id_viagem": id_viagem,
-        "data_marcacao": data_marcacao
-    }
-    print(nova_marcacao)
-    req = requests.post(f"{api_base_url}/marcacoes", json=nova_marcacao)
-    
+        nova_marcacao = {
+            "id_viajante": id_viajante,
+            "id_viagem": id_viagem,
+            "data_marcacao": data_marcacao
+        }
+        requests.post(f"{api_base_url}/marcacoes", json=nova_marcacao)
+        
+        return redirect(url_for('marcar'))
+
     req2 = requests.get(f"{api_base_url}/viajantes")
     viajantes = req2.json()
 
@@ -115,7 +117,18 @@ def marcar():
     req_vi = requests.get(f"{api_base_url}/viagens")
     viagens = req_vi.json()
     return render_template('marcar.html', viajantes=viajantes, viagens=viagens)
+@app.route('/pedir_viagem', methods=['POST'])
+def pedir_viagem():
+    id_viajante = request.form.get('viajante')
+    destino = request.form.get('destino')
 
+    pedido = {
+        "id_viajante": id_viajante,
+        "destino_temporal": destino
+    }
+    requests.post(f"{api_base_url}/pedidos", json=pedido)
+
+    return redirect(url_for('marcar'))
 
 
 @app.route('/registar', methods=['GET', 'POST'])
