@@ -8,14 +8,14 @@
         <label for="viajante">Viajante:</label>
         <select id="viajante" name="viajante" required>
             {% for viajante in viajantes %}
-            <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
+                <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
             {% endfor %}
         </select>
         
         <label for="viagem">Viagem:</label>
         <select id="viagem" name="viagem" required>
             {% for viagem in viagens %}
-            <option value="{{ viagem.id }}">{{ viagem.destino_temporal }} - {{ viagem.data_partida }}</option>
+                <option value="{{ viagem.id }}">{{ viagem.destino_temporal }} - {{ viagem.data_partida }}</option>
             {% endfor %}
         </select>
         
@@ -26,7 +26,7 @@
     <form method="post">
         <select id="viajante" name="viajante" required>
             {% for viajante in viajantes %}
-            <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
+                <option value="{{ viajante.id }}">{{ viajante.nome }}</option>
             {% endfor %}
         </select>
     
