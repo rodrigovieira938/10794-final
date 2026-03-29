@@ -15,15 +15,8 @@ def home():
 def listar():
     # Viajantes
     resp = requests.get(f"{api_base_url}/viajantes")
-    viajantes_api = resp.json()
+    viajantes = resp.json()
     
-    lista = []
-    for v in viajantes_api:
-        lista.append({
-            "nome": v["nome"],
-            "email": v["email"]
-        })
- 
     # Viagens
     resp_viagens = requests.get(f"{api_base_url}/viagens")
     viagens = resp_viagens.json()
@@ -32,18 +25,36 @@ def listar():
     resp_reservas = requests.get(f"{api_base_url}/marcacoes")
     reservas = resp_reservas.json()
  
-    # Restrições (Corrigido)
-    restricoes = []
-    for viagem in viagens:
-        resp_r = requests.get(f"{api_base_url}/viagens/{viagem['id']}/restricoes")
-        # Se a API devolver um dicionário {}, o append guarda-o inteiro
-        dados_r = resp_r.json()
-        
-        # Garantimos que o ID da viagem vai dentro do dicionário para o HTML
-        dados_r['id_viagem'] = viagem['id']
-        restricoes.append(dados_r)
- 
-    return render_template('listar.html', viajantes=lista, viagens=viagens, reservas=reservas, restricoes=restricoes)
+    return render_template('listar.html', viajantes=viajantes, viagens=viagens, reservas=reservas)
+
+@app.route('/viajante/<int:id>')
+def viajante(id):
+    viajante = requests.get(f"{api_base_url}/viajantes/{id}").json()
+    marcacoes = requests.get(f"{api_base_url}/marcacoes?viajante_id={id}").json()
+    marcacoes_viagens = []
+    for marcacao in marcacoes:
+        viagem = requests.get(f"{api_base_url}/viagens/{marcacao['id_viagem']}").json()
+        marcacoes_viagens.append(viagem)
+    # converter data para formato mais legível
+    viajante['data_nasc'] = datetime.strptime(viajante['data_nasc'], "%Y-%m-%d").date().strftime("%d/%m/%Y")
+    return render_template('viajante.html', viajante=viajante, marcacoes=marcacoes_viagens)
+
+@app.route('/viagem/<int:id>')
+def viagem(id):
+    viagem = requests.get(f"{api_base_url}/viagens/{id}").json()
+    restricoes = requests.get(f"{api_base_url}/viagens/{id}/restricoes").json()
+    marcacoes = requests.get(f"{api_base_url}/marcacoes?viagem_id={id}").json()
+
+    marcacoes_viajantes = []
+    for marcacao in marcacoes:
+        viajante = requests.get(f"{api_base_url}/viajantes/{marcacao['id_viajante']}").json()
+        marcacoes_viajantes.append(viajante)
+
+    print(marcacoes_viajantes)
+
+    # converter data para formato mais legível
+    viagem['data_partida'] = datetime.strptime(viagem['data_partida'], "%Y-%m-%d").date().strftime("%d/%m/%Y")
+    return render_template("viagem.html", viagem=viagem, restricoes=restricoes, viajantes=marcacoes_viajantes)
 
 @app.route('/consultar')
 def consultar():
@@ -86,7 +97,9 @@ def gerir():
  
     req = requests.get(f"{api_base_url}/viajantes")
     viajantes = req.json()
-
+    for v in viajantes:
+        v['data_nasc2'] = v['data_nasc'] # manter data original para envio à API
+        v['data_nasc'] = datetime.strptime(v['data_nasc'], "%Y-%m-%d").date().strftime("%d/%m/%Y")
     return render_template("gerir.html", viajantes=viajantes)
 
 
@@ -146,7 +159,7 @@ def registar():
         req = requests.post(f"{api_base_url}/viajantes", json=novo_viajante)
         
         
-        return redirect(url_for('listar'))
+        return redirect(url_for('viajante', id=req.json()['id']))
     return render_template('registar.html')
 
 if __name__ == '__main__':

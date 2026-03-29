@@ -8,26 +8,16 @@
 <h2>Viajantes</h2>
 <ul>
     {% for v in viajantes %}
-        <li>{{ v.nome }} — {{ v.email }}</li>
+        <li><a href="{{ url_for("viajante", id=v.id) }}">{{ v.nome }} — {{ v.email }}</a></li>
     {% endfor %}
 </ul>
+
+<hr>
 
 <h2>Viagens</h2>
 <ul>
     {% for viagem in viagens %}
-    <li>{{ viagem.destino_temporal }} - {{ viagem.data_partida }}</li>
-    {% endfor %}
-</ul>
-<hr>
-
-<h2>Restrições</h2>
-<ul>
-    {% for restricao in restricoes %}
-    <li>
-        <strong>Viagem: {{ restricao.id_viagem }}</strong> | 
-        Idade mínima: {{ restricao.idade_minima }} | 
-        Idade máxima: {{ restricao.idade_maxima }}
-    </li>
+    <li><a href="{{ url_for("viagem", id=viagem.id) }}">{{ viagem.destino_temporal }} - {{ viagem.data_partida }}</a></li>
     {% endfor %}
 </ul>
 

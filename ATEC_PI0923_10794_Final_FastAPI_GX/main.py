@@ -221,8 +221,14 @@ def create_marcacao(create_marcacao: CreateMarcacao):
 
     if session.get(ViajanteBD, create_marcacao.id_viajante) == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viajante não encontrado")
-    if session.get(ViagemBD, create_marcacao.id_viagem) == None:
+    viagem = session.get(ViagemBD, create_marcacao.id_viagem) 
+    if viagem == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
+
+    marcacoes = session.execute(select(MarcacaoBD).where(MarcacaoBD.id_viagem ==create_marcacao.id_viagem)).scalars().all()
+
+    if len(marcacoes) >= viagem.max_viajantes: # type: ignore
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem já atingiu o número máximo de viajantes")
 
     session.add(marcacao_bd)
     session.commit()
@@ -235,6 +241,12 @@ def get_marcacoes(viajante_id: int = 0) -> List[Marcacao]:
         stmt = select(MarcacaoBD)
     else:
         stmt = select(MarcacaoBD).where(MarcacaoBD.id_viajante == viajante_id)
+    result = session.execute(stmt)
+    marcacoes = result.scalars().all()
+    return [Marcacao.model_validate(marcacao) for marcacao in marcacoes]
+@app.get("/marcacoes")
+def get_marcacoes_viagem(viagem_id: int) -> List[Marcacao]:
+    stmt = select(MarcacaoBD).where(MarcacaoBD.id_viagem == viagem_id)
     result = session.execute(stmt)
     marcacoes = result.scalars().all()
     return [Marcacao.model_validate(marcacao) for marcacao in marcacoes]

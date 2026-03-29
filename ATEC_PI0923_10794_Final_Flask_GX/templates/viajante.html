@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Viajante - {{ viajante.nome }}{% endblock %}
+
+{%block content %}
+    <h1>Viajante - {{ viajante.nome }}</h1>
+    <p><strong>Email:</strong> {{ viajante.email }}</p>
+    <p><strong>Data de Nascimento:</strong> {{ viajante.data_nasc }}</p>
+    <hr>
+    <h2>Marcações</h2>
+    <ul>
+        {% for viagem in marcacoes %}
+            <li><a href="{{ url_for("viagem", id=viagem.id) }}">{{ viagem.destino_temporal }} - {{ viagem.data_partida }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

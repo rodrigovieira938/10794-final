@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Viagem - {{ viagem.destino_temporal }}{% endblock %}
+
+{%block content %}
+    <h1>Viagem - {{ viagem.destino_temporal }}</h1>
+    <p><strong>Data de Partida:</strong> {{ viagem.data_partida }}</p>
+    <p><strong>Duração:</strong> {{ viagem.duracao_dias }} dias</p>
+    <hr>
+    <h2>Viajantes</h2>
+    {% for viajante in viajantes %}
+        <p><a href="{{ url_for("viajante", id=viajante.id) }}">{{ viajante.nome }} - {{viajante.email}}</a></p>
+    {% endfor %}
+    {% if restricoes %}
+    <hr>
+    <h2>Restrições</h2>
+        {% if restricoes.idade_minima %}
+            <p><strong>Idade Mínima:</strong> {{ restricoes.idade_minima }}</p>
+        {% endif %}
+        {% if restricoes.idade_maxima %}
+            <p><strong>Idade Máxima:</strong> {{ restricoes.idade_maxima }}</p>
+        {% endif %}
+        {% if restricoes.proibicao_interac_eventos %}
+            <p><strong>Proibição de Interação com Eventos:</strong> 
+                {% if restricoes.proibicao_interac_eventos %}
+                    Sim</p>
+                {% else %}
+                    Não
+                {% endif %}
+        {% endif %}
+        {% if restricoes.requisitos %}
+            <p><strong>Requisitos:</strong> {{ restricoes.requisitos }}</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -8,12 +8,12 @@
 <ul>
 {% for v in viajantes %}
     <li>
-        {{ v.nome }} - {{ v.email }}
+        {{ v.nome }} - {{ v.email }} - {{ v.data_nasc }}
 
         <form method="post" style="display:inline;">
             <input type="hidden" name="id" value="{{ v.id }}">
             <input type="hidden" name="acao" value="apagar">
-            <button type="submit">Apagar</button>
+            <button type="submit" style="background-color: #C70000; color:white">Apagar</button>
         </form>
 
 
@@ -21,9 +21,9 @@
             <input type="hidden" name="id" value="{{ v.id }}">
             <input type="hidden" name="acao" value="editar">
 
-            <input type="text" name="nome" placeholder="Nome" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="date" name="data_nasc" required>
+            <input type="text" name="nome" placeholder="Nome" value="{{ v.nome }}" required>
+            <input type="email" name="email" placeholder="Email" value="{{ v.email }}" required>
+            <input type="date" name="data_nasc" value="{{ v.data_nasc2 }}" required>
 
             <button type="submit">Atualizar</button>
         </form>
