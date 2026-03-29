@@ -8,7 +8,7 @@
 <h2>Viajantes</h2>
 <ul>
     {% for v in viajantes %}
-        <li><a href="{{ url_for("viajante", id=v.id) }}">{{ v.nome }} — {{ v.email }}</a></li>
+        <li><a href="{{ url_for("viajante", id=v.id) }}">{{ v.nome }} - {{ v.email }}</a></li>
     {% endfor %}
 </ul>
 
@@ -21,4 +21,12 @@
     {% endfor %}
 </ul>
 
+<hr>
+
+<h2>Pedidos de Viagem</h2>
+<ul>
+    {% for pedido in pedidos %}
+        <li><a href="{{ url_for("pedido", id=pedido.id) }}">{{ pedido.destino_temporal }} ({{ pedido.viajante.nome }})</a></li>
+    {% endfor %}
+</ul>
 {% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Pedido de Viagem - {{ pedido.destino_temporal }}{% endblock %}
+
+{%block content %}
+    <h1>Pedido de Viagem - {{ pedido.destino_temporal }}</h1>
+    <p><strong>Data do pedido:</strong> {{ pedido.data_pedido }}</p>
+    <p><strong>Pedido por: </strong> <a href="{{ url_for("viajante", id=pedido.viajante.id) }}">{{ pedido.viajante.nome }}</a></p>
+    <hr>
+{% endblock %}
