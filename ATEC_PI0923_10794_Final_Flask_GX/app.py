@@ -50,8 +50,6 @@ def viagem(id):
         viajante = requests.get(f"{api_base_url}/viajantes/{marcacao['id_viajante']}").json()
         marcacoes_viajantes.append(viajante)
 
-    print(marcacoes_viajantes)
-
     # converter data para formato mais legível
     viagem['data_partida'] = datetime.strptime(viagem['data_partida'], "%Y-%m-%d").date().strftime("%d/%m/%Y")
     return render_template("viagem.html", viagem=viagem, restricoes=restricoes, viajantes=marcacoes_viajantes)
