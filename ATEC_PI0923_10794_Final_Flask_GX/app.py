@@ -54,25 +54,6 @@ def viagem(id):
     viagem['data_partida'] = datetime.strptime(viagem['data_partida'], "%Y-%m-%d").date().strftime("%d/%m/%Y")
     return render_template("viagem.html", viagem=viagem, restricoes=restricoes, viajantes=marcacoes_viajantes)
 
-@app.route('/consultar')
-def consultar():
-    resp1 = requests.get(f"{api_base_url}/viajantes")
-    viajantes_api = resp1.json()
-    viajantes_display = []
-    for v in viajantes_api:
-        viajantes_display.append({
-            "nome": v["nome"],
-            "email": v["email"]
-        })
-
-    resp2 = requests.get(f"{api_base_url}/viagens")
-    viagens = resp2.json()
-
-    resp3 = requests.get(f"{api_base_url}/marcacoes")
-    reservas = resp3.json()
-
-    return render_template('consultar.html', reservas=reservas, viajantes=viajantes_api, viagens=viagens, viajantes_display=viajantes_display)
-
 @app.route('/gerir', methods=['GET', 'POST'])
 def gerir():
 
