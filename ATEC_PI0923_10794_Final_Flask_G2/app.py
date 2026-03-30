@@ -17,7 +17,6 @@ def home():
 def listar():
     viajantes = requests.get(f"{api_base_url}/viajantes").json()
     viagens = requests.get(f"{api_base_url}/viagens").json()
-    reservas = requests.get(f"{api_base_url}/marcacoes").json()
     pedidos = requests.get(f"{api_base_url}/pedidos").json()
     
     for viagem in viagens:
@@ -26,7 +25,7 @@ def listar():
     for pedido in pedidos:
         viajante = requests.get(f"{api_base_url}/viajantes/{pedido['id_viajante']}").json()
         pedido['viajante'] = viajante
-    return render_template('listar.html', viajantes=viajantes, viagens=viagens, reservas=reservas, pedidos=pedidos)
+    return render_template('listar.html', viajantes=viajantes, viagens=viagens, pedidos=pedidos)
 
 @app.route('/viajante/<int:id>')
 def viajante(id):
@@ -80,6 +79,7 @@ def gerir():
                 "data_nasc": request.form.get('data_nasc')
             }
             requests.put(f"{api_base_url}/viajantes/{id_viajante}", json=dados)
+        return redirect(url_for('gerir'))
 
  
     req = requests.get(f"{api_base_url}/viajantes")

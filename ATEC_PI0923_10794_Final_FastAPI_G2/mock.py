@@ -29,7 +29,7 @@ restricoes = [
 ]
 
 from sqlalchemy.orm import Session
-engine = create_engine('sqlite:///alunos.db')
+engine = create_engine('sqlite:///chronetravel.db')
 Base.metadata.create_all(engine)
 
 with Session(engine) as session:

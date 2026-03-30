@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from modelos import *
 
 
-engine = create_engine('sqlite:///alunos.db')
+engine = create_engine('sqlite:///chronetravel.db')
 Base.metadata.create_all(engine)
 
 session = Session(engine)
@@ -179,8 +179,8 @@ def create_restricao(id: int, create_restricao: CreateRestricoesViagem) -> Restr
     session.commit()
     session.refresh(restricao_bd)
     return RestricoesViagem.model_validate(restricao_bd)
-@app.put("/viagens/{id}/restricoes")
-def put_restricao(id: int, create_restricao: CreateRestricoesViagem) -> RestricoesViagem:
+@app.patch("/viagens/{id}/restricoes")
+def patch_restricao(id: int, create_restricao: CreateRestricoesViagem) -> RestricoesViagem:
     if session.get(ViagemBD, id) == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Viagem não encontrada")
     
